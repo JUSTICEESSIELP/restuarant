@@ -2,27 +2,38 @@ package main
 
 import (
 	"os"
-	  "restaurant/database"
-	  "github.com/JUSTICEESSIELP/restuarant/routes"
-	  "github.com/JUSTICEESSIELP/restuarant/middlewares"
 
-	  "go.mongodb.org/mongo-driver/mongo"
+	"restaurant/database"
+	"restaurant/routes"
+
+	"github.com/gin-gonic/gin"
+
+	middlewares "restaurant/middlewares"
+
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
+var foodCollection *mongo.Collection = database.OpenCollection(database.Client, "food")
 
+func main() {
+	port := os.Getenv("PORT")
 
-func main(){
-port := os.Getenv("PORT")
+	if port == "" {
+		port = "3000"
+	}
 
-if port == ""{
-	port = "3000"
-}
+	ginRouter := gin.New()
+	ginRouter.Use(gin.Logger())
+	ginRouter.Use(middlewares.Authentication())
 
+	routes.FoodRoutes(ginRouter)
+	routes.MenuRoutes(ginRouter)
+	routes.InvoiceRoutes(ginRouter)
+	routes.TableRoutes(ginRouter)
+	routes.OrderItemRoutes(ginRouter)
+	routes.OrderRoutes(ginRouter)
+	routes.UserRoutes(ginRouter)
 
-
-router:=gin.New()
-
-
-
+	ginRouter.Run(":" + port)
 
 }
