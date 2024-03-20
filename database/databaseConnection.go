@@ -5,13 +5,25 @@ import (
 	"fmt"
 	"os"
 
+	"log"
+
+	"github.com/joho/godotenv"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-var uri = os.Getenv("MONGO_URI")
+// var uri = os.Getenv("MONGO_URI")
 
 func DBInstance() *mongo.Client {
+	err := godotenv.Load("local.env")
+	if err != nil {
+		log.Fatalf("Some error occured. Err: %s", err)
+	}
+
+	uri := os.Getenv("MONGO_URI")
+	fmt.Println(uri)
+
+	fmt.Println(uri, "env")
 	serverAPI := options.ServerAPI(options.ServerAPIVersion1)
 	opts := options.Client().ApplyURI(uri).SetServerAPIOptions(serverAPI)
 	client, err := mongo.Connect(context.Background(), opts)
